@@ -1,6 +1,7 @@
-const ytdl = require('ytdl-core');
+const ytdl = require('@distube/ytdl-core');
 
 export default async function handler(req, res) {
+  // CORS Headers add kiye gaye hain
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
 
@@ -10,8 +11,9 @@ export default async function handler(req, res) {
 
   const { url, format } = req.query;
 
+  // URL verification
   if (!url || !ytdl.validateURL(url)) {
-    return res.status(400).json({ error: 'Invalid YouTube URL' });
+    return res.status(400).json({ error: 'Sahi YouTube URL nahi hai' });
   }
 
   try {
@@ -29,6 +31,7 @@ export default async function handler(req, res) {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Download failed.' });
+    // Exact error send karega
+    res.status(500).json({ error: 'Backend Error: ' + error.message });
   }
 }
