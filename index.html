@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT Link to MP3 - Pro Version</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { background-color: #000000; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .pill-container { background: #ffffff; border-radius: 50px; padding: 4px; display: flex; align-items: center; }
+        .pill-input { background: transparent; color: #000; border: none; outline: none; flex-grow: 1; padding: 12px 20px; font-size: 16px; }
+        .pill-btn { background: #10B981; color: white; border-radius: 40px; padding: 12px 30px; font-weight: bold; border: none; cursor: pointer; transition: all 0.2s ease; }
+        .pill-btn:hover { background: #059669; transform: scale(1.02); }
+        .format-toggle { background: #1f2937; border-radius: 30px; padding: 4px; display: inline-flex; margin-bottom: 24px; }
+        .format-btn { padding: 8px 24px; border-radius: 26px; font-weight: 600; cursor: pointer; transition: all 0.2s; color: #9ca3af; }
+        .format-btn.active { background: #ffffff; color: #000000; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen justify-center items-center px-4 relative">
+    <div class="w-full max-w-2xl text-center z-10 mt-10">
+        <h1 class="text-6xl md:text-8xl font-bold mb-8 italic text-white" style="font-family: 'Brush Script MT', cursive;">YT Link</h1>
+
+        <div class="format-toggle">
+            <div id="btn-mp3" class="format-btn active" onclick="setFormat('mp3')"><i class="fa-solid fa-music mr-2"></i>MP3</div>
+            <div id="btn-mp4" class="format-btn" onclick="setFormat('mp4')"><i class="fa-solid fa-video mr-2"></i>MP4</div>
+        </div>
+
+        <div class="pill-container w-full max-w-xl mx-auto mb-8">
+            <input type="text" id="urlInput" class="pill-input" placeholder="Paste a YouTube URL here..." autocomplete="off">
+            <button id="goBtn" class="pill-btn min-w-[80px]" onclick="processUrl()">
+                <span id="btnText">Download</span>
+            </button>
+        </div>
+
+        <p id="statusMsg" class="text-yellow-400 mt-2 font-medium"></p>
+    </div>
+
+    <script>
+        let currentFormat = 'mp3';
+
+        function setFormat(format) {
+            currentFormat = format;
+            document.getElementById('btn-mp3').classList.remove('active');
+            document.getElementById('btn-mp4').classList.remove('active');
+            document.getElementById(`btn-${format}`).classList.add('active');
+        }
+
+        function processUrl() {
+            const url = document.getElementById('urlInput').value.trim();
+            const statusMsg = document.getElementById('statusMsg');
+            const goBtn = document.getElementById('goBtn');
+            const btnText = document.getElementById('btnText');
+
+            if (!url || (!url.includes('youtube.com') && !url.includes('youtu.be'))) {
+                statusMsg.innerText = "Error: Invalid YouTube Link!";
+                statusMsg.className = "text-red-500 mt-2 font-medium";
+                return;
+            }
+
+            goBtn.disabled = true;
+            btnText.innerText = "Starting...";
+            statusMsg.innerText = "Server se connect ho raha hai, browser me download shuru hoga...";
+            statusMsg.className = "text-blue-400 mt-2 font-medium";
+
+            const backendUrl = `/api/download?url=${encodeURIComponent(url)}&format=${currentFormat}`;
+            window.location.href = backendUrl;
+
+            setTimeout(() => {
+                goBtn.disabled = false;
+                btnText.innerText = "Download";
+                statusMsg.innerText = "";
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
